@@ -1,9 +1,7 @@
 "use strict";
 
 var canvas, gl, program;
-
 var NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
-
 var points = [];
 var colors = [];
 var saveColors = [];
@@ -35,7 +33,6 @@ var vertexColors = [
 
 
 // Parameters controlling the size of the Robot's arm
-
 var HEAD_HEIGHT = 1.5;
 var HEAD_WIDTH = 1.5;
 var EYE_HEIGHT = .5;
@@ -51,30 +48,22 @@ var UPPER_LEG_WIDTH = .5;
 var LOWER_LEG_HEIGHT = 2.0;
 var LOWER_LEG_WIDTH = .5;
 
-
 // Shader transformation matrices
-
 var modelViewMatrix, projectionMatrix;
 
 // Array of rotation angles (in degrees) for each rotation axis
-
 var Base = 0;
 var LowerArm = 1;
 var UpperArm = 2;
 var LowerLeg = 3;
 var UpperLeg = 4;
 
-
-
 var theta = [0, -60, 30, 180, -20];
-
 var angle = 0;
-
 var modelViewMatrixLoc;
-
 var vBuffer, cBuffer;
 
-//----------------------------------------------------------------------------
+//____________________________________________
 
 function quad(color, a, b, c, d) {
     colors.push(vertexColors[color]);
@@ -91,7 +80,6 @@ function quad(color, a, b, c, d) {
     points.push(vertices[d]);
 }
 
-
 function colorCube(a, b, c, d, e, f) {
     colors = [];
     points = [];
@@ -103,7 +91,6 @@ function colorCube(a, b, c, d, e, f) {
     quad(f, 5, 4, 0, 1);
 
 }
-
 
 //__________________________________________
 
@@ -131,8 +118,6 @@ function waveBack(i) {
         }
     }, 100)
 }
-
-
 
 //___________________________________________
 
@@ -165,18 +150,6 @@ function fallDown(i) {
 
 //____________________________________________
 
-// Remmove when scale in MV.js supports scale matrices
-
-function scale4(a, b, c) {
-    var result = mat4();
-    result[0][0] = a;
-    result[1][1] = b;
-    result[2][2] = c;
-    return result;
-}
-
-//---------------------------------------
-
 function turn(i, j) {
     console.log('next turn step');
     setTimeout(function () {
@@ -188,7 +161,7 @@ function turn(i, j) {
     }, 100)
 }
 
-//-------------------------------------------------
+//____________________________________________
 
 function blinkFunct(i) {
     blink = true;
@@ -203,8 +176,7 @@ function blinkFunct(i) {
 
 }
 
-
-//--------------------------------------------------
+//____________________________________________
 
 function KeyDown(event) {
     if (quit === true) {
@@ -242,14 +214,24 @@ function KeyDown(event) {
         wave(45);
     }
 
-    if (event.key === "b" | event.key === "B") {
+    if (event.key === "b" | event.key === "B") {                 //blink
         blinkFunct(3);
     }
 
-    if (event.key === "Q" | event.key === "q") {
+    if (event.key === "Q" | event.key === "q") {                //quit program
         quit = true;
     }
 
+}
+
+// Remmove when scale in MV.js supports scale matrices
+
+function scale4(a, b, c) {
+    var result = mat4();
+    result[0][0] = a;
+    result[1][1] = b;
+    result[2][2] = c;
+    return result;
 }
 
 //_____________________________________________
@@ -405,20 +387,21 @@ var render = function () {
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+    //base and head
     modelViewMatrix = rotate(theta[Base], 0, 1, 0);
     base();
 
     modelViewMatrix = mult(modelViewMatrix, translate(0.0, BASE_HEIGHT, 0.0));
     head();
-    ///////////////////////////////////////////////////////
-
+    //////////////////////////////////////////////////////
+    //eyes
     for (var i = 0; i < colors.length; i++) {  //saving copy of colors so eyes can be colored differently
         saveColors[i] = colors[i];
     }
 
-    colorCube(4, 4, 4, 4, 4, 4);
+    colorCube(4, 4, 4, 4, 4, 4); //color eyes blue
     if (blink === true) {
-        colorCube(0, 0, 0, 0, 0, 0);
+        colorCube(0, 0, 0, 0, 0, 0); //color eyes black
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
@@ -445,6 +428,7 @@ var render = function () {
     gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 
     ///////////////////////////////////////////////////////
+    //right arm
     modelViewMatrix = rotate(theta[Base], 0, 1, 0);
 
     modelViewMatrix = mult(modelViewMatrix, translate(BASE_WIDTH / 2, BASE_HEIGHT / 2, 0.0));
@@ -455,6 +439,7 @@ var render = function () {
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[UpperArm], 0, 0, 1));
     upperArm();
     /////////////////////////////////////////////////////////
+    //left arm
     modelViewMatrix = rotate(theta[Base], 0, 1, 0);
 
     modelViewMatrix = mult(modelViewMatrix, translate(-BASE_WIDTH / 2, BASE_HEIGHT / 2, 0.0));
@@ -465,6 +450,7 @@ var render = function () {
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[UpperArm] - 180, 0, 0, 1));
     upperArm();
     /////////////////////////////////////////////////////////
+    //right leg
     modelViewMatrix = rotate(theta[Base], 0, 1, 0);
 
     modelViewMatrix = mult(modelViewMatrix, translate(BASE_WIDTH / 2, 0.0, 0.0));
@@ -475,6 +461,7 @@ var render = function () {
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[UpperLeg], 0, 0, 1));
     upperLeg();
     /////////////////////////////////////////////////////////
+    //left leg
     modelViewMatrix = rotate(theta[Base], 0, 1, 0);
 
     modelViewMatrix = mult(modelViewMatrix, translate(-BASE_WIDTH / 2, 0.0, 0.0));
