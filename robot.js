@@ -171,6 +171,22 @@ function scale4(a, b, c) {
     return result;
 }
 
+//---------------------------------------
+
+function turn(i, j) {
+    console.log('next turn step j = ');
+    console.log(j);
+    console.log('i =');
+    console.log(i);
+    setTimeout(function () {
+        i += 15;
+        theta[0] = i;
+        if (j < 12) {
+            turn(parseFloat(theta[0]), j + 1);
+        }
+    }, 300)
+}
+
 
 //--------------------------------------------------
 
@@ -195,9 +211,8 @@ function KeyDown(event) {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
     }
 
-    if (event.key === "t" | event.key === "T") {                    //turn 180 degrees
-        console.log("turning around");
-        theta[0] = theta[0] - 180;
+    if (event.key === "t" | event.key === "T") {
+        turn(parseFloat(theta[0]), 1);
     };
 
     if (event.key === "j" | event.key === "J") {                     //jump up and down
