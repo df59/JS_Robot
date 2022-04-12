@@ -407,7 +407,6 @@ var render = function () {
     modelViewMatrix = mult(modelViewMatrix, translate(HEAD_HEIGHT / 4, BASE_HEIGHT / 4, HEAD_WIDTH - 0.75));
     eye();
 
-
     for (i = 0; i < colors.length; i++) { //restoring colors
         colors[i] = saveColors[i];
     }
