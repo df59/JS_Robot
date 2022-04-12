@@ -85,22 +85,78 @@ function quad(color, a, b, c, d) {
 }
 
 
-// function colorCube() {
-//     quad(1, 0, 3, 2);
-//     quad(2, 3, 7, 6);
-//     quad(3, 0, 4, 7);
-//     quad(6, 5, 1, 2);
-//     quad(4, 5, 6, 7);
-//     quad(5, 4, 0, 1);
-// }
+function colorCube(a, b, c, d, e, f) {
+    colors = [];
+    points = [];
+    quad(a, 1, 0, 3, 2);
+    quad(b, 2, 3, 7, 6);
+    quad(c, 3, 0, 4, 7);
+    quad(d, 6, 5, 1, 2);
+    quad(e, 4, 5, 6, 7);
+    quad(f, 5, 4, 0, 1);
+    console.log("coloring cube");
 
-function colorCube() {
-    quad(2, 1, 0, 3, 2);
-    quad(3, 2, 3, 7, 6);
-    quad(4, 3, 0, 4, 7);
-    quad(5, 6, 5, 1, 2);
-    quad(1, 4, 5, 6, 7);
-    quad(7, 5, 4, 0, 1);
+}
+
+//__________________________________________
+
+function wave(i) {
+
+    setTimeout(function () {
+        console.log('next wave step, i = ');
+        console.log(i);
+        theta[2] = i;
+        if (i < 180) {
+            wave(i + 15);
+        }
+    }, 100)
+    if (i >= 180) {
+        waveBack(i);
+    }
+}
+
+function waveBack(i) {
+
+    setTimeout(function () {
+        console.log('next wave step, i = ');
+        console.log(i);
+        theta[2] = i;
+        if (i > 15) {
+            waveBack(i - 15);
+        }
+    }, 100)
+}
+
+
+
+//___________________________________________
+
+function jump(i) {
+    setTimeout(function () {
+        console.log('next jump step, i = ');
+        console.log(i);
+        projectionMatrix = ortho(-10, 10, i, 10, -10, 10);
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, "projectionMatrix"), false, flatten(projectionMatrix));
+        i = i - 2;
+        if (i >= -30) {
+            jump(i);
+        }
+    }, 100)
+    if (i <= -30) {
+        fallDown(i);
+    }
+}
+
+function fallDown(i) {
+    setTimeout(function () {
+        console.log('next fall step');
+        projectionMatrix = ortho(-10, 10, i, 10, -10, 10);
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, "projectionMatrix"), false, flatten(projectionMatrix));
+        i = i + 2;
+        if (i <= -10) {
+            fallDown(i);
+        }
+    }, 100)
 }
 
 //____________________________________________
@@ -118,10 +174,48 @@ function scale4(a, b, c) {
 
 //--------------------------------------------------
 
+function KeyDown(event) {
+
+    console.log(event);
+
+    if (event.key === "c") {                                            //Lower case c for color scheme 2
+        colorCube(2, 3, 4, 5, 1, 7);
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+    }
+    if (event.key === "C") {                                            //Capital C for color scheme 1
+        colorCube(1, 2, 3, 6, 4, 5);
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+    }
+
+    if (event.key === "t" | event.key === "T") {                    //turn 180 degrees
+        console.log("turning around");
+        theta[0] = theta[0] - 180;
+    };
+
+    if (event.key === "j" | event.key === "J") {                     //jump up and down
+        jump(-10);
+    }
+
+    if (event.key === "w" | event.key === "W") {
+        wave(45);
+    }
+
+}
+
+//_____________________________________________
 
 window.onload = function init() {
 
     canvas = document.getElementById("gl-canvas");
+    window.addEventListener("keydown", KeyDown, false);
 
     gl = WebGLUtils.setupWebGL(canvas);
     if (!gl) { alert("WebGL isn't available"); }
@@ -138,7 +232,7 @@ window.onload = function init() {
 
     gl.useProgram(program);
 
-    colorCube();
+    colorCube(1, 2, 3, 6, 4, 5);
 
     // Load shaders and use the resulting shader program
 
