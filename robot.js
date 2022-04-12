@@ -33,6 +33,8 @@ var vertexColors = [
 
 // Parameters controlling the size of the Robot's arm
 
+var HEAD_HEIGHT = 1.5;
+var HEAD_WIDTH = 1.5;
 var BASE_HEIGHT = 4.0;
 var BASE_WIDTH = 3.0;
 var LOWER_ARM_HEIGHT = 2.0;
@@ -184,7 +186,7 @@ function turn(i, j) {
         if (j < 12) {
             turn(parseFloat(theta[0]), j + 1);
         }
-    }, 300)
+    }, 100)
 }
 
 
@@ -296,6 +298,17 @@ window.onload = function init() {
     render();
 }
 
+//---------------------------------------------------------------------------
+
+function head() {
+    var s = scale4(HEAD_WIDTH, HEAD_HEIGHT, HEAD_WIDTH);
+    var instanceMatrix = mult(translate(0.0, 0.5 * HEAD_HEIGHT, 0.0), s);
+    var t = mult(modelViewMatrix, instanceMatrix);
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(t));
+    gl.drawArrays(gl.TRIANGLES, 0, NumVertices);
+}
+
+
 //----------------------------------------------------------------------------
 
 
@@ -357,6 +370,11 @@ var render = function () {
 
     modelViewMatrix = rotate(theta[Base], 0, 1, 0);
     base();
+
+    modelViewMatrix = mult(modelViewMatrix, translate(0.0, BASE_HEIGHT, 0.0));
+    head();
+    ///////////////////////////////////////////////////////
+    modelViewMatrix = rotate(theta[Base], 0, 1, 0);
 
     modelViewMatrix = mult(modelViewMatrix, translate(BASE_WIDTH / 2, BASE_HEIGHT / 2, 0.0));
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[LowerArm], 0, 0, 1));
