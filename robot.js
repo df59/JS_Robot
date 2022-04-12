@@ -7,6 +7,7 @@ var NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
 var points = [];
 var colors = [];
 var saveColors = [];
+var blink = false;
 
 var vertices = [
     vec4(-0.5, -0.5, 0.5, 1.0),
@@ -99,7 +100,6 @@ function colorCube(a, b, c, d, e, f) {
     quad(d, 6, 5, 1, 2);
     quad(e, 4, 5, 6, 7);
     quad(f, 5, 4, 0, 1);
-    console.log("coloring cube");
 
 }
 
@@ -109,8 +109,7 @@ function colorCube(a, b, c, d, e, f) {
 function wave(i) {
 
     setTimeout(function () {
-        console.log('next wave step, i = ');
-        console.log(i);
+        console.log('next wave step');
         theta[2] = i;
         if (i < 180) {
             wave(i + 15);
@@ -124,8 +123,7 @@ function wave(i) {
 function waveBack(i) {
 
     setTimeout(function () {
-        console.log('next wave step, i = ');
-        console.log(i);
+        console.log('next wave step');
         theta[2] = i;
         if (i > 15) {
             waveBack(i - 15);
@@ -139,8 +137,7 @@ function waveBack(i) {
 
 function jump(i) {
     setTimeout(function () {
-        console.log('next jump step, i = ');
-        console.log(i);
+        console.log('next jump step');
         projectionMatrix = ortho(-10, 10, i, 10, -10, 10);
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "projectionMatrix"), false, flatten(projectionMatrix));
         i = i - 2;
@@ -180,10 +177,7 @@ function scale4(a, b, c) {
 //---------------------------------------
 
 function turn(i, j) {
-    console.log('next turn step j = ');
-    console.log(j);
-    console.log('i =');
-    console.log(i);
+    console.log('next turn step');
     setTimeout(function () {
         i += 15;
         theta[0] = i;
@@ -191,6 +185,21 @@ function turn(i, j) {
             turn(parseFloat(theta[0]), j + 1);
         }
     }, 100)
+}
+
+//-------------------------------------------------
+
+function blinkFunct(i) {
+    blink = true;
+    setTimeout(function () {
+        i--;
+        console.log('blinking');
+        if (i > 0) {
+            blinkFunct(i)
+        }
+        else blink = false;
+    }, 100)
+
 }
 
 
@@ -227,6 +236,10 @@ function KeyDown(event) {
 
     if (event.key === "w" | event.key === "W") {                //wave arms
         wave(45);
+    }
+
+    if (event.key === "b" | event.key === "B") {
+        blinkFunct(3);
     }
 
 }
@@ -393,6 +406,9 @@ var render = function () {
     }
 
     colorCube(4, 4, 4, 4, 4, 4);
+    if (blink === true) {
+        colorCube(0, 0, 0, 0, 0, 0);
+    }
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
 
