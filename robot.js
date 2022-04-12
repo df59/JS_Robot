@@ -6,6 +6,7 @@ var NumVertices = 36; //(6 faces)(2 triangles/face)(3 vertices/triangle)
 
 var points = [];
 var colors = [];
+var saveColors = [];
 
 var vertices = [
     vec4(-0.5, -0.5, 0.5, 1.0),
@@ -35,6 +36,8 @@ var vertexColors = [
 
 var HEAD_HEIGHT = 1.5;
 var HEAD_WIDTH = 1.5;
+var EYE_HEIGHT = .5;
+var EYE_WIDTH = .5;
 var BASE_HEIGHT = 4.0;
 var BASE_WIDTH = 3.0;
 var LOWER_ARM_HEIGHT = 2.0;
@@ -99,6 +102,7 @@ function colorCube(a, b, c, d, e, f) {
     console.log("coloring cube");
 
 }
+
 
 //__________________________________________
 
@@ -213,7 +217,7 @@ function KeyDown(event) {
         gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
     }
 
-    if (event.key === "t" | event.key === "T") {
+    if (event.key === "t" | event.key === "T") {                    //turn 180 degrees
         turn(parseFloat(theta[0]), 1);
     };
 
@@ -221,7 +225,7 @@ function KeyDown(event) {
         jump(-10);
     }
 
-    if (event.key === "w" | event.key === "W") {
+    if (event.key === "w" | event.key === "W") {                //wave arms
         wave(45);
     }
 
@@ -311,6 +315,15 @@ function head() {
 
 //----------------------------------------------------------------------------
 
+function eye() {
+    var s = scale4(EYE_WIDTH, EYE_HEIGHT, EYE_WIDTH);
+    var instanceMatrix = mult(translate(0.0, 0.5 * EYE_HEIGHT, 0.0), s);
+    var t = mult(modelViewMatrix, instanceMatrix);
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(t));
+    gl.drawArrays(gl.TRIANGLES, 0, NumVertices);
+}
+
+//----------------------------------------------------------------------------
 
 function base() {
     var s = scale4(BASE_WIDTH, BASE_HEIGHT, BASE_WIDTH);
@@ -373,6 +386,38 @@ var render = function () {
 
     modelViewMatrix = mult(modelViewMatrix, translate(0.0, BASE_HEIGHT, 0.0));
     head();
+    ///////////////////////////////////////////////////////
+
+    for (var i = 0; i < colors.length; i++) {  //saving copy of colors so eyes can be colored differently
+        saveColors[i] = colors[i];
+    }
+
+    colorCube(4, 4, 4, 4, 4, 4);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+    modelViewMatrix = mult(modelViewMatrix, translate(-HEAD_HEIGHT / 4, BASE_HEIGHT / 4, HEAD_WIDTH - 0.75));
+    eye();
+
+    modelViewMatrix = rotate(theta[Base], 0, 1, 0);
+    modelViewMatrix = mult(modelViewMatrix, translate(0.0, BASE_HEIGHT, 0.0));
+
+    modelViewMatrix = mult(modelViewMatrix, translate(HEAD_HEIGHT / 4, BASE_HEIGHT / 4, HEAD_WIDTH - 0.75));
+    eye();
+
+
+    for (i = 0; i < colors.length; i++) { //restoring colors
+        colors[i] = saveColors[i];
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+
     ///////////////////////////////////////////////////////
     modelViewMatrix = rotate(theta[Base], 0, 1, 0);
 
