@@ -8,6 +8,7 @@ var points = [];
 var colors = [];
 var saveColors = [];
 var blink = false;
+var quit = false;
 
 var vertices = [
     vec4(-0.5, -0.5, 0.5, 1.0),
@@ -206,6 +207,9 @@ function blinkFunct(i) {
 //--------------------------------------------------
 
 function KeyDown(event) {
+    if (quit === true) {
+        throw new Error("program has stopped");
+    }
 
     console.log(event);
 
@@ -240,6 +244,10 @@ function KeyDown(event) {
 
     if (event.key === "b" | event.key === "B") {
         blinkFunct(3);
+    }
+
+    if (event.key === "Q" | event.key === "q") {
+        quit = true;
     }
 
 }
@@ -391,6 +399,9 @@ function lowerLeg() {
 //----------------------------------------------------------------------------
 
 var render = function () {
+    if (quit === true) {
+        throw new Error("quitting program");
+    }
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 

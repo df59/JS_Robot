@@ -1,0 +1,8 @@
+commands:
+c: color scheme 2
+C: color scehem 1
+b or B: blink
+w or W: wave
+t or T: turn around
+j or J: jump up and down
+q or Q: end program execution
