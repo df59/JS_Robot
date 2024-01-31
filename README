@@ -9,7 +9,7 @@ To run this open robot.html in a web browser.
 
 commands:
 c: color scheme 2
-C: color scehem 1
+C: color scheme 1
 b or B: blink
 w or W: wave
 t or T: turn around
