@@ -1,3 +1,12 @@
+Javascript Robot,
+Dustin Franklin,
+df59@uakron.edu
+
+This is a javascript implementation of a graphical robot with user commands and
+sliders to make the robot move which utilizes webgl.
+
+To run this open robot.html in a web browser.
+
 commands:
 c: color scheme 2
 C: color scehem 1
